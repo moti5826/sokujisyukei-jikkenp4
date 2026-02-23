@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MKWorld OBS表示</title>
+
+<style>
+body{
+    margin:0;
+    background:transparent;
+    font-family:sans-serif;
+    color:white;
+}
+
+#container{
+    padding:20px;
+}
+
+table{
+    border-collapse:collapse;
+    width:100%;
+    font-size:28px;
+}
+
+th,td{
+    border:2px solid rgba(255,255,255,0.3);
+    padding:10px;
+    text-align:center;
+}
+
+.rank1{background:gold;color:black}
+.rank2{background:silver;color:black}
+.rank3{background:#cd7f32;color:black}
+
+.modeBtn{
+    margin:5px;
+    padding:6px 12px;
+    font-size:16px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="container">
+
+<button class="modeBtn" onclick="mode='team'">チーム順位</button>
+<button class="modeBtn" onclick="mode='compact'">コンパクト表示</button>
+
+<div id="board"></div>
+
+</div>
+
+<script>
+
+let mode="team";
+
+function render(){
+
+const data=JSON.parse(localStorage.getItem("mk_obs")||"[]");
+
+if(!data.length)return;
+
+let html="<table>";
+
+if(mode==="team"){
+html+="<tr><th>順位</th><th>チーム</th><th>点数</th></tr>";
+
+data.forEach((t,i)=>{
+
+let cls="";
+if(i===0)cls="rank1";
+if(i===1)cls="rank2";
+if(i===2)cls="rank3";
+
+html+=`
+<tr class="${cls}">
+<td>${i+1}</td>
+<td>${t[0]}</td>
+<td>${t[1]}</td>
+</tr>`;
+});
+}
+
+if(mode==="compact"){
+html+="<tr><th>チーム</th><th>点数</th></tr>";
+
+data.slice(0,6).forEach(t=>{
+html+=`<tr>
+<td>${t[0]}</td>
+<td>${t[1]}</td>
+</tr>`;
+});
+}
+
+html+="</table>";
+
+board.innerHTML=html;
+}
+
+// 0.5秒ごと更新（OBSリアルタイム）
+setInterval(render,500);
+
+render();
+
+</script>
+
+</body>
+</html>
